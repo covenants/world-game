@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Wordle Game</title>
+</head>
+<body>
+	<h1>Welcome to Wordle!</h1>
+	<p>Try to guess the hidden word by selecting the correct letters.</p>
+	<p id="word"></p>
+	<p>Guess a letter:</p>
+	<input type="text" id="guess" maxlength="1">
+	<button onclick="guessLetter()">Submit</button>
+	<p id="feedback"></p>
+	<p id="guesses"></p>
+
+	<script>
+		// List of words to choose from
+		var words = ["apple", "banana", "cherry", "date", "elderberry", "fig", "grape"];
+		// Maximum number of guesses allowed
+		var maxGuesses = 6;
+		// Current state of the game
+		var word;
+		var guessedLetters = new Set();
+		var guessesLeft;
+		var wordDisplay = "";
+
+		// Function to start a new game
+		function newGame() {
+			// Select a random word from the list
+			word = words[Math.floor(Math.random() * words.length)];
+			guessedLetters.clear();
+			guessesLeft = maxGuesses;
+
+			// Display the initial state of the game
+			wordDisplay = "";
+			for (var i = 0; i < word.length; i++) {
+				wordDisplay += "_ ";
+			}
+			document.getElementById("word").innerHTML = wordDisplay;
+			document.getElementById("guesses").innerHTML = "Guesses left: " + guessesLeft;
+		}
+
+		// Function to update the display when a letter is guessed
+		function updateDisplay() {
+			wordDisplay = "";
+			for (var i = 0; i < word.length; i++) {
+				if (guessedLetters.has(word[i])) {
+					wordDisplay += word[i] + " ";
+				} else {
+					wordDisplay += "_ ";
+				}
+			}
+			document.getElementById("word").innerHTML = wordDisplay;
+			document.getElementById("guesses").innerHTML = "Guesses left: " + guessesLeft;
+		}
+
+		// Function to check if the game is over
+		function checkGameOver() {
+			if (wordDisplay.indexOf("_") == -1) {
+				alert("Congratulations, you win!");
+				newGame();
+			} else if (guessesLeft == 0) {
+				alert("Sorry, you lose! The word was: " + word);
+				newGame();
+			}
+		}
+
+		// Function to handle a letter guess
+		function guessLetter() {
+			var guess = document.getElementById("guess").value.toLowerCase();
+			if (guess.length == 1 && /[a-z]/.test(guess)) {
+				if (guessedLetters.has(guess)) {
+					document.getElementById("feedback").innerHTML = "You already guessed that letter.";
+				} else if (word.indexOf(guess) == -1) {
+					guessesLeft--;
+					document.getElementById("feedback").innerHTML = "Incorrect guess.";
+					updateDisplay();
+					checkGameOver();
+				} else {
+					guessedLetters.add(guess);
+					document.getElementById("feedback").innerHTML = "Correct guess!";
+					updateDisplay();
+					checkGameOver();
+				}
+			} else {
+				document.getElementById("feedback").innerHTML = "Please enter a valid letter.";
+			}
+			document.getElementById("guess").value = "";
+			document.getElementById("guess").focus();
+		}
+
+		// Start a new game when the page loads
+		newGame();
+	</script>
+</body
